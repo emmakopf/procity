@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import SelectDropdown from './components/select'
+import Modal from './components/modal'
 import styles from "./page.module.css"
 
 const regionMap: { [key: string]: string } = {
@@ -35,6 +36,13 @@ type RiotAccount = {
   region?: string,
   summonerLevel?: number,
   username?: string,
+  puuid?: string,
+}
+
+const convertS = (s: number) => {
+  const minutes: number = Math.floor(s/60);
+  const seconds: number = minutes % 60;
+  return `${minutes}m ${seconds}s`
 }
 
 export default function Home() {
@@ -42,7 +50,10 @@ export default function Home() {
   const [riotId, setRiotId] = useState<string>('')
   const [region, setRegion] = useState<string>('')
   const [error, setError] = useState<string>('')
+  const [matchData, setMatchData] = useState<Match[]>([])
   const [accountInfo, setAccountInfo] = useState<RiotAccount>({})
+  const [queue, setQueue] = useState<string>('')
+  const [open, setOpen] = useState<boolean>(false)
 
   const selectRegion = (regionStr: string) => {
     setRegion(regionStr)
@@ -77,6 +88,7 @@ export default function Home() {
       }
 
       if (data.puuid) {
+        userAccount.puuid = data.puuid
         // Get summoner information
         const summonerRes = await fetch(`/api/summoner?puuid=${data.puuid}&region=${regionMap[region]}`)
         const summonerData = await summonerRes.json()
@@ -94,10 +106,38 @@ export default function Home() {
       
       setAccountInfo(userAccount)
     } catch (err) {
-      console.log(err)
+      if (err instanceof Error) {
+        setError(err.message)
+      } else { 
+        setError('Could not fetch user information')
+      }
     }
     setLoading(false)
     return 
+  }
+
+  const getRecentMatches = async (queue: string) => {
+    setLoading(true)
+    setQueue(queue)
+    try { 
+      const res = await fetch(`/api/matches/by-puuid?puuid=${accountInfo.puuid}&region=${region}`)
+      const data = await res.json()
+      if (data.success) {
+        setLoading(false)
+        setMatchData(data.allMatches)
+        setOpen(true)
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else { 
+        setError('Could not fetch user information')
+      }
+    }
+  }
+
+  const closeModal = () => {
+    setOpen(false)
   }
 
   return (
@@ -147,8 +187,11 @@ export default function Home() {
                 <>
                   {accountInfo.league?.map((leagueQ, idx) => {
                     return (
-                      <ul className={styles.account} key={idx}>
-                        <li><b>{queueMap[leagueQ.queueType]}</b></li>
+                      <ul className={styles.league} key={idx}>
+                        <li>
+                          <b>{queueMap[leagueQ.queueType]}</b>
+                          <span onClick={() => getRecentMatches(queueMap[leagueQ.queueType])}>Match History</span>
+                        </li>
                         <li><b>Rank: </b>{leagueQ.tier}</li>
                         <li><b>LP: </b>{leagueQ.leaguePoints}</li>
                         <li><b>Win %: </b>{Math.ceil(leagueQ.wins / (leagueQ.wins + leagueQ.losses) * 100)}%</li>
@@ -161,6 +204,27 @@ export default function Home() {
             </div>
           )}
         </section>
+        {open && (
+          <Modal
+            onClose={closeModal}
+            body={
+              <div className={styles.modalContainer}>
+              <div className={styles.modal}>
+                {matchData.map((match, idx) => {
+                  return (
+                    <ul key={idx}>
+                      <li><b>{match.win ? 'Win' : 'Loss' }</b> - {convertS(match.gameDuration)}</li>
+                      <li><b>KDA:</b>{match.kills}/{match.deaths}/{match.assists}</li>
+                      <li><b>Champion:</b> {match.championName}</li>
+                    </ul>
+                  )
+                })}
+              </div>
+              </div>
+            }
+            header={`${queue} Match History`}
+          />
+        )}
       </main>
       <footer className={styles.footer}>
         Created by

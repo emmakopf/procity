@@ -26,7 +26,9 @@ export async function GET(req: Request) {
     if (data.status && data.status.status_code !== 200) return errorHandler(data.status.message, data.status.status_code)
     return NextResponse.json({ leagues: data, success: true }, { status: 200 })
   } catch (err) {
-    console.log(err)
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 })
+    }
     return NextResponse.json({ error: 'Internal error occurred' }, { status: 500 })
   }
 }

@@ -1,4 +1,19 @@
 .select {
   color: black;
   margin-bottom: 12px;
+  max-width: 30vw;
+}
+
+/* mobile css */
+@media (max-width: 600px) {
+  .select {
+    max-width: 60vw;
+  }
+}
+
+/* ipad/tablet css */
+@media (min-width: 600px) and (max-width: 1024px) {
+  .select {
+    max-width: 50vw;
+  }
 }

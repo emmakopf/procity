@@ -1,0 +1,50 @@
+.modal { 
+  position: absolute;
+  top: 25%;
+  left: 35%;
+  width: 30vw;
+  min-height: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0);
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow:2px 3px 5px #999;
+}
+
+.modalHeader { 
+  display: flex;
+}
+ 
+.modalHeader h3 {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4px;
+}
+
+.modalHeader span {
+  font-size: 16px;
+  margin-right: 4px;
+  display: flex;
+  justify-content: right;
+  cursor: pointer;
+}
+
+/* mobile css */
+@media (max-width: 600px) {
+  .modal {
+    width: 80vw;
+    height: 40vh;
+    left: 10%;
+  }
+}
+
+/* ipad/tablet css */
+@media (min-width: 600px) and (max-width: 1024px) {
+  .modal {
+    width: 50vw;
+    left: 25%
+  }
+}
