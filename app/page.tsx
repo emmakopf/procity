@@ -7,7 +7,7 @@ import Modal from './components/modal'
 import styles from "./page.module.css"
 
 const regionMap: { [key: string]: string } = {
-  'Americas': 'na1',
+  'Americas NA': 'na1',
   'Americas BR': 'br1',
   'Americas LA1': 'la1',
   'Americas LA2': 'la2',
