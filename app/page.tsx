@@ -12,7 +12,7 @@ const regionMap: { [key: string]: string } = {
   'Americas LA1': 'la1',
   'Americas LA2': 'la2',
   'Asia JP': 'jp1', 
-  'Asia KR': 'kr1',
+  'Asia KR': 'kr',
   'Europe ME1': 'me1',
   'Europe EUN1': 'eun1',
   'Europe EUW1': 'euw1',
@@ -135,7 +135,7 @@ export default function Home() {
     setLoading(true)
     setQueue(queue)
     try { 
-      const res = await fetch(`/api/matches/by-puuid?puuid=${accountInfo.puuid}&region=${region}`)
+      const res = await fetch(`/api/matches/by-puuid?puuid=${accountInfo.puuid}&region=${region.split(' ')[0]}`)
       const data = await res.json()
       if (data.success) {
         setLoading(false)
