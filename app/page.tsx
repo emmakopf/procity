@@ -7,9 +7,23 @@ import Modal from './components/modal'
 import styles from "./page.module.css"
 
 const regionMap: { [key: string]: string } = {
-  Americas: 'na1',
-  Asia: 'kr', 
-  Europe: 'euw1'
+  'Americas': 'na1',
+  'Americas BR': 'br1',
+  'Americas LA1': 'la1',
+  'Americas LA2': 'la2',
+  'Asia JP': 'jp1', 
+  'Asia KR': 'kr1',
+  'Europe ME1': 'me1',
+  'Europe EUN1': 'eun1',
+  'Europe EUW1': 'euw1',
+  'Europe TR1': 'tr1', 
+  'Europe RU': 'ru', 
+  'SEA OC1': 'oc1',
+  'SEA PH2': 'ph2',
+  'SEA SG2': 'sg2',
+  'SEA TH2': 'th2', 
+  'SEA TW2': 'tw2',
+  'SEA VN2': 'vn2'
 }
 
 const queueMap: { [key: string]: string } = {
@@ -77,10 +91,11 @@ export default function Home() {
     const userAccount: RiotAccount = {}
     userAccount.username = riotId
     userAccount.region = region
+    const apiRegion: string= region.split(' ')[0]
 
     try {
       // Get PUUID from Riot account name
-      const res = await fetch(`/api/account?gameName=${gameName}&tagLine=${tagLine}&region=${region}`)
+      const res = await fetch(`/api/account?gameName=${gameName}&tagLine=${tagLine}&region=${apiRegion}`)
       const data = await res.json()
       if (!data.success) {
         setLoading(false)
@@ -146,7 +161,7 @@ export default function Home() {
         <section className={styles.form}>
           <span>Select your Account Region </span>
           <SelectDropdown 
-            options={['Americas', 'Asia', 'Europe']}
+            options={Object.keys(regionMap)}
             onChange={selectRegion}
             placeholder={'Select Region...'}
           />
